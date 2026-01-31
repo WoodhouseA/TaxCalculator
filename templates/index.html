@@ -12,7 +12,7 @@
     input[type="number"] { padding: 0.5rem; font-size: 1rem; }
     button { padding: 0.6rem 0.9rem; font-size: 1rem; cursor: pointer; }
     .result { margin-top: 1rem; font-weight: 600; }
-    .error { margin-top: 1rem; color: #b00020; }
+    .error { margin-top: 1rem; }
   </style>
 
   <!-- Axios CDN -->
@@ -55,7 +55,7 @@
         feedback1.textContent = `Tax on income: ${res.data.taxIncome}`;
         feedback2.textContent = `Tax on savings: ${res.data.taxSavings}`;
       }).
-      catch (err => displayError(data));
+      catch (err => displayError(err));
     }
 
     function save() {
@@ -66,29 +66,28 @@
       axios.post("/api/saveTax", {a, b}).then( res => {
         feedback1.className = feedback2.className = "result";
         feedback1.textContent = "Saved successfully";
-        //feedback2.textContent = `Saved tax on savings: ${res.data.taxSavings}`;
       }).
-      catch (err => displayError(data));
+      catch (err => displayError(err));
     }
 
-    function displayError(data) {
-      if (data.error1) {
+    function displayError(err) {
+      if (err.response.data.error1) {
         feedback1.className = "error";
         feedback1.textContent = "Please provide your income";
       }
-      else if (data.error2) {
-        feedback1.className = "error";
+      else if (err.response.data.error2) {
+        //feedback1.className = "error";
         feedback1.textContent = "Please provide positive income";
       }
-      else if (data.error3) {
+      else if (err.response.error3) {
         feedback2.className = "error";
         feedback2.textContent = "No tax is paid on saving interest less than £1000";
       }
-      else if (data.error4) {
+      else if (err.response.error4) {
         feedback1.className = "error";
         feedback1.textContent = "Both incomes must be numerical";
       }
-      else if (data.error) {
+      else if (err.response.error) {
         feedback.className = "error";
         feedback.textContent = "Error saving data";
       }
